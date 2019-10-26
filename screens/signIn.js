@@ -18,6 +18,9 @@ class SignIn extends Component {
         }
     }
 
+
+    
+
     _sigin(){
   console.log('chala')
   let { email,password } = this.state
@@ -40,6 +43,12 @@ class SignIn extends Component {
 })
 }
 
+componentDidMount(){
+    let user = this.props.user;
+    if (user){
+        this.props.navigation.navigate('Home')
+    }
+}
     render(){
         let { error, } = this.state;
         return(

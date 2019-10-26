@@ -11,9 +11,6 @@ import Navigation from './navigation/navigation'
 
 export default class App extends Component {
 
-async componentDidMount() {
-  this.checkPermission();
-}
 
   //1
 async checkPermission() {

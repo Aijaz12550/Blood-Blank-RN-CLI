@@ -3,44 +3,130 @@ import {
 View,Text,TouchableOpacity,ScrollView,StyleSheet,Picker
 } from 'react-native'
 
-import { Container, Header, Content, Form, Item, Input, Label } from 'native-base';
+import {  Form, Item, Input, Label, Toast } from 'native-base';
 import { update_user } from '../store/actions/action'
 import { connect } from 'react-redux'
 import ip from './ip'
+
+import firebase from 'react-native-firebase';
+import AsyncStorage from '@react-native-community/async-storage'
 
 class SignUp extends Component {
     constructor(){
         super()
         this.state = {
            
-                fName:'Aijaz',
-                lName:'Abbasi',
-                email:'m8y@gmail.com',
-                bloodGroup:'A+',
-                password:12334455,
+                fName:'',
+                lName:'',
+                email:'',
+                bloodGroup:'',
+                password:'',
+                error:'',
+                email_errorr:'',
+                fcmToken:'',
             
         }
     }
 
+    
+  //1
+async checkPermission() {
+    console.log('aijaz')
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+        this.getToken();
+    } else {
+        this.requestPermission();
+    }
+  }
+  
+    //3
+  async getToken() {
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
+    this.setState({fcmToken})
+     console.log('<<<token>>>',fcmToken)
+    if (!fcmToken) {
+        fcmToken = await firebase.messaging().getToken();
+        if (fcmToken) {
+            // user has a device token
+            console.log('token>>>',fcmToken)
+            this.setState({fcmToken})
+            await AsyncStorage.setItem('fcmToken', fcmToken);
+        }
+    }
+  }
+  
+    //2
+  async requestPermission() {
+    try {
+        await firebase.messaging().requestPermission();
+        // User has authorised
+        this.getToken();
+    } catch (error) {
+        // User has rejected permissions
+        console.log('permission rejected');
+    }
+  }
+  
+  
+
      _signup(){
           console.log('chala')
-          let {fName,lName,email,bloodGroup,password} = this.state
-          fetch(`http://${ip}:3000/users/register`, {
-    method: 'POST',
+          
+          let {fName,lName,email,bloodGroup,password, email_errorr, password_error} = this.state
+          if(!email_errorr && !password_error){
+
+              fetch(`http://${ip}:3000/users/register`, {
+                  method: 'POST',
 	headers: {
 		'Content-Type': 'application/json'
 	},
     body: JSON.stringify({fName,lName,email,bloodGroup,password})
 }).then(user=>user.json())
-.then(data=>console.log(data))
-.catch(error=>console.log(error))
+.then(data=>{
+    console.log('data~~~!!!~~~~~~!!!!~~~',data)
+    if(data.result){
+        
+        Toast.show({ text: "Registration successful..",
+                position: "top", type: "success"})
+
+                setTimeout(()=>{
+
+                    this.props.navigation.navigate('SignIn')
+                },2000)
+    }
+    else if(data.message){
+        this.setState({error:data.message})
+    }
+})
+}else{
+    this.setState({error:'Registration not successful. Please fill the form correctly.'})
+}
+
       }
 
-    componentDidMount(){
-        // this.props.store_user({'name':'Aijaz jee'})
+    //   Form ____ Validation .........
+
+    _email(value){
+        let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        let test = emailRegex.test(value)
+        if(test){
+            this.setState({email:value,email_errorr:'',error:''})
+        }else{
+            this.setState({email_errorr:'Email is not correct..',error:''})
+        }
+    }
+
+    _password(value){
+        if(value && value.length > 5){
+            this.setState({password:value,password_error:'',error:''})
+        }else{
+            this.setState({password_error:'Password should be atleast 6 characters',error:''})
+        }
     }
 
     render(){
+        let { email_errorr, error, password_error } = this.state;
         return(
             <View style={{flex:1,backgroundColor:'teal'}}>
 
@@ -57,17 +143,20 @@ class SignUp extends Component {
                   <Form style={styles.form}>
             <Item floatingLabel>
               <Label style={styles.label}>First Name</Label>
-              <Input onChangeText={(text)=>this.setState({fName:text})} />
+              <Input onChangeText={(text)=>this.setState({fName:text,error:''})} />
             </Item>
 
             <Item floatingLabel>
               <Label style={styles.label}>Last Name</Label>
-              <Input onChangeText={(text)=>this.setState({lName:text})} />
+              <Input onChangeText={(text)=>this.setState({lName:text,error:''})} />
             </Item>
 
             <Item floatingLabel>
-              <Label style={styles.label}>Email</Label>
-              <Input onChangeText={(text)=>this.setState({email:text})} />
+                {email_errorr
+              ?<Label style={styles.error}>{email_errorr}</Label>
+              :<Label style={styles.label}>Email</Label>
+                }
+              <Input onChangeText={(text)=>this._email(text)} />
             </Item>
 
             <Item  >
@@ -76,7 +165,7 @@ class SignUp extends Component {
   selectedValue={this.state.blood}
   style={{height: 50, width: 200,color:'white',backgroundColor:'teal'}}
   onValueChange={(itemValue, itemIndex) =>
-    this.setState({blood: itemValue})
+    this.setState({blood: itemValue,error:''})
   }>
        {/* <Picker.Item label="" value="" /> */}
   <Picker.Item label="A+" value="A+" />
@@ -92,9 +181,17 @@ class SignUp extends Component {
             </Item>
 
             <Item floatingLabel >
-              <Label style={styles.label}>Password</Label>
-              <Input onChangeText={(text)=>this.setState({password:text})}  secureTextEntry/>
+                {password_error
+              ?<Label style={styles.error}>{password_error}</Label>
+              :<Label style={styles.label}>Password</Label>
+                }
+              <Input onChangeText={(text)=>this._password(text)}  secureTextEntry/>
             </Item>
+
+           
+           
+            <Text style={{width:250,color:'yellow',marginTop:10,}}>{error?error:''}</Text>
+      
 
             <TouchableOpacity onPress={()=>this._signup()} style={styles.button}>
                 <Text style={styles.bText}>Sign Up</Text>
@@ -126,7 +223,8 @@ const styles = StyleSheet.create({
         marginRight:5,
         maxWidth:350,
         alignSelf:'center',
-        minWidth:300
+        minWidth:300,
+        marginBottom:30,
     },
     label:{
         color:'white'
@@ -137,6 +235,9 @@ const styles = StyleSheet.create({
         height:40,
         justifyContent:'center',
         borderRadius:20
+    },
+    error:{
+        color:'yellow'
     },
     bText:{
         color:'teal',

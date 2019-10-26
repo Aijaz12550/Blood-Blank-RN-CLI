@@ -18,7 +18,6 @@ state={posts:[]}
         return{
 
             title: 'Feed',
-            // headerRight:<TouchableOpacity onPress={()=>getAllPosts()}><Text>Refresh</Text></TouchableOpacity>,
 
                 //  toggle
             headerLeft: 

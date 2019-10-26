@@ -28,8 +28,8 @@ class AddRequest extends Component {
       selectedState:null,
       cities:[],
       selectedCity:null,
-      bloodGroup:'', nUnits:'',urgency:'2 days',country:'Pakistan',
-      hospital:'',relation:"cousin",contact:1233,detail:'abc',
+      bloodGroup:'', nUnits:'',urgency:'2 days',
+      hospital:'',relation:"cousin",contact:1233,detail:'abc',selectedCountry:'',
       showToast: false
     }
     }
@@ -48,7 +48,6 @@ class AddRequest extends Component {
         <Text style={{  width:30,height:2,backgroundColor:'white',alignSelf:"center", marginBottom:6}}></Text>
         <Text style={{  width:30,height:2,backgroundColor:'white',alignSelf:"center", marginBottom:6}}></Text>
         <Text style={{  width:30,height:2,backgroundColor:'white',alignSelf:"center", marginBottom:6}}></Text>
-        {/* <Text style={{  width:30,height:2,backgroundColor:'white',alignSelf:"center", marginBottom:4}}></Text> */}
 
          </TouchableOpacity>,
     //   toggle end
@@ -70,14 +69,15 @@ class AddRequest extends Component {
 
  async addPost(){
     let { user } = this.props
-    let { bloodGroup, nUnits,urgency,country,selectedCity,selectedState,hospital,relation,contact,detail } = this.state
+    let timeStamp = new Date().getTime()
+    let { bloodGroup, nUnits,urgency,country,selectedCity,selectedState,hospital,relation,contact,detail,selectedCountry } = this.state
     fetch(`http://${ip}:3000/posts/addPost`, {
         method:"POST",
             headers:{
                 "Content-Type":"application/json",
                 "authorization":`Bearer ${user.token}`
             },
-            body:JSON.stringify({userId:user._id, bloodGroup, nUnits,urgency,country,selectedCity,selectedState,hospital,relation,contact,detail})
+            body:JSON.stringify({userId:user._id,name:user.name,timeStamp, bloodGroup, nUnits,urgency,selectedCountry,selectedCity,selectedState,hospital,relation,contact,detail})
         }).then(data => data.json())
         .then(data=>{
             Toast.show({ text: "Post added successfully..",

@@ -21,8 +21,8 @@ const Blood_Request = createStackNavigator({
 
 const drawer = createDrawerNavigator(
     {
-        Home:{screen:Home},
         SignUp:{screen:Auth},
+        Home:{screen:Home},
         PostR:{screen:Blood_Request}
 },
 {
