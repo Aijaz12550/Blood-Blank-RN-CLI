@@ -2,7 +2,7 @@
 
 
 import React, {Component} from 'react';
-import { View, Text,Alert } from 'react-native';
+import { View, Text,Alert,PermissionsAndroid } from 'react-native';
 import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage'
 import { Root } from 'native-base'
