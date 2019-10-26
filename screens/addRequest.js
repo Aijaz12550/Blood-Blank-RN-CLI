@@ -77,7 +77,7 @@ class AddRequest extends Component {
                 "Content-Type":"application/json",
                 "authorization":`Bearer ${user.token}`
             },
-            body:JSON.stringify({userId:user._id,name:user.name,timeStamp, bloodGroup, nUnits,urgency,selectedCountry,selectedCity,selectedState,hospital,relation,contact,detail})
+            body:JSON.stringify({userId:user._id,name:user.name,timeStamp:timeStamp, bloodGroup, nUnits,urgency,selectedCountry,selectedCity,selectedState,hospital,relation,contact,detail})
         }).then(data => data.json())
         .then(data=>{
             Toast.show({ text: "Post added successfully..",

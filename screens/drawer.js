@@ -3,6 +3,7 @@ import { View, Text,StyleSheet,TouchableHighlight,TouchableOpacity,Image,ScrollV
 import { DrawerActions } from 'react-navigation-drawer';
 import { connect } from 'react-redux'
 import { remove_user } from '../store/actions/action'
+import ip from './ip'
 
 
  class DrawerContent extends Component {
@@ -11,9 +12,23 @@ import { remove_user } from '../store/actions/action'
 
     }
     
-   _signOut(){
-       this.props.remove_user();
-       this.props.navigation.navigate('SignIn')
+   async _signOut(){
+       await fetch(`http://${ip}:3000/users/logout`,{
+           method : 'POST',
+           headers :{
+               'Content-Type' : 'application/json'
+            },
+            body:JSON.stringify({id:this.props.user._id})
+        }).then(res => res.json())
+        .then(result => {
+            if(result.message){
+
+                console.log('signout~~~~~~',result)
+                this.props.remove_user();
+                this.props.navigation.navigate('SignIn')
+            }
+    })
+
    }
     render() {
         
@@ -128,7 +143,11 @@ const styles = StyleSheet.create({
         margin:15,
     }
 })
-
+const mapStateToProps = state => {
+    return {
+        user: state.user
+    }
+}
 
 const mapDispatchToProps = dispatch => {
     return {
@@ -136,4 +155,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(DrawerContent);
+export default connect(mapStateToProps, mapDispatchToProps)(DrawerContent);

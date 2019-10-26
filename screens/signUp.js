@@ -19,7 +19,7 @@ class SignUp extends Component {
                 fName:'',
                 lName:'',
                 email:'',
-                bloodGroup:'',
+                bloodGroup:'A+',
                 password:'',
                 error:'',
                 email_errorr:'',
@@ -67,13 +67,15 @@ async checkPermission() {
         console.log('permission rejected');
     }
   }
-  
+  componentDidMount(){
+      this.requestPermission()
+  }
   
 
      _signup(){
           console.log('chala')
           
-          let {fName,lName,email,bloodGroup,password, email_errorr, password_error} = this.state
+          let {fName,lName,email,bloodGroup,password, email_errorr, password_error,fcmToken:fcmToken} = this.state
           if(!email_errorr && !password_error){
 
               fetch(`http://${ip}:3000/users/register`, {
@@ -81,7 +83,7 @@ async checkPermission() {
 	headers: {
 		'Content-Type': 'application/json'
 	},
-    body: JSON.stringify({fName,lName,email,bloodGroup,password})
+    body: JSON.stringify({fName,lName,email,bloodGroup,password,fcmToken,notification:false})
 }).then(user=>user.json())
 .then(data=>{
     console.log('data~~~!!!~~~~~~!!!!~~~',data)
@@ -162,12 +164,12 @@ async checkPermission() {
             <Item  >
                 {/* <Label style={styles.label}>Blood Group</Label> */}
               <Picker
-  selectedValue={this.state.blood}
+  selectedValue={this.state.bloodGroup}
   style={{height: 50, width: 200,color:'white',backgroundColor:'teal'}}
   onValueChange={(itemValue, itemIndex) =>
-    this.setState({blood: itemValue,error:''})
+    this.setState({bloodGroup: itemValue,error:''})
   }>
-       {/* <Picker.Item label="" value="" /> */}
+      
   <Picker.Item label="A+" value="A+" />
   <Picker.Item label="A-" value="A-" />
    <Picker.Item label="B+" value="B+" />

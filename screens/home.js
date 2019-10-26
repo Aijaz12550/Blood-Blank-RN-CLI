@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 // import update_user  from '../store/reducers/root'
 import { update_user } from '../store/actions/action'
 import ip from './ip'
+import moment from 'moment'
 
 import { DrawerActions } from 'react-navigation-drawer'
 
@@ -130,7 +131,7 @@ state={posts:[]}
                             <View key={key} style={styles.card} onPress={()=>console.log('hello')}>
                                   <View style={{display:'flex',flexDirection:'row',marginTop:7,justifyContent:'space-between'}}>
                    <Text style={styles.name}>Muhammad Aijaz</Text>
-                 <Text style={styles.para}>5 hours ago</Text>
+                 <Text style={styles.para}>{moment(val.timeStamp).fromNow()}</Text>
                     </View>
                          
                          <View style={{display:'flex',flexDirection:'row',marginTop:10,}}>
@@ -162,8 +163,9 @@ state={posts:[]}
                     <Text style={styles.para}> {val.detail}</Text>
                      </View>
                     
-                    <Text style={styles.para}>Volunteer uptill now : 5</Text>
+                    <Text style={styles.para}>Volunteer uptill now : {val.volunteer.length}</Text>
                     <Text style={styles.para}>Current requirement : 2</Text>
+                    <Text style={styles.para}>No. of Units donated : {val.donated.length}</Text>
 
                     <View style={{display:'flex',flexDirection:'row',justifyContent:'center'}}>
                         <TouchableOpacity onPress={()=>this.addVolunteer(val)} style={styles.button}>
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
         width:150,
         justifyContent:'center',
         borderRadius:10,
-        backgroundColor:'#296',
+        backgroundColor:'red',
        
     },
        button1:{
