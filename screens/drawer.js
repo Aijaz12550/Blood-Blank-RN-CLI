@@ -50,7 +50,7 @@ import ip from './ip'
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity  underlayColor={'rgba(23,30,20,0.2)'}>
+                    <TouchableOpacity onPress={()=>this.props.navigation.navigate('MyPosts')}  underlayColor={'rgba(23,30,20,0.2)'}>
                         <View style={styles.row}>
                         <Image style={[styles.headerImage,{height:25,width:25,backgroundColor:'coral'}]}  />
                         <Text  style={styles.text}>My Requests</Text>

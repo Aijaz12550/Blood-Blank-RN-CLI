@@ -13,17 +13,23 @@ const Auth = createStackNavigator({
 
 const Home = createStackNavigator({
  Home:Routes.Home,
+ Detail:Routes.DetailScreen
 })
 
 const Blood_Request = createStackNavigator({
     Blood_Request : Routes.AddRequest
 })
+const MyPosts = createStackNavigator({
+    MyPosts:Routes.MyPosts,
+    MyPostDetail:Routes.MyPostDetail
+})
 
 const drawer = createDrawerNavigator(
     {
-        SignUp:{screen:Auth},
+        MyPosts:{screen:MyPosts},
         Home:{screen:Home},
-        PostR:{screen:Blood_Request}
+        SignUp:{screen:Auth},
+        PostR:{screen:Blood_Request},
 },
 {
     initialRouteName:'',

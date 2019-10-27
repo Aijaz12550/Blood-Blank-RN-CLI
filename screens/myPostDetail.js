@@ -15,11 +15,11 @@ class DetailedScreen extends React.Component {
 //  CUSTOMIZATION OF STACK HEADER
 static navigationOptions = ({navigation}) => {
     return{
-        title: 'Detail',
+        title: 'My Post Detail',
     headerStyle: {
         backgroundColor:'#20B2AA'
     },
-    headerTintColor: 'red',
+    headerTintColor: 'white',
     headerTitleStyle: {
         fontWeight: 'bold',
         color:'white'
@@ -94,6 +94,32 @@ static navigationOptions = ({navigation}) => {
         })
         .catch(e=>console.log(e,'e'))
     }
+
+
+    // Donated................
+    _donated(array){
+        const postId = this.props.navigation.getParam('id');
+        fetch(`http://${ip}:3000/posts/updateStatus`,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'authorization':`Bearer ${this.props.user.token}`
+            },
+            body:JSON.stringify({id:postId,vol:array})
+        }).then(res => res.json())
+        .then(result => {
+            if(result.data){
+                this.getPost();
+            }
+        }
+        )
+    }
+    statusChange(index,newStatus){
+        let { post } = this.state;
+        post.volunteer[index].status = newStatus
+        this.setState({post})
+        this._donated(post.volunteer)
+    }
   render(){
     return (
      <View style={{flex:1}}>
@@ -130,10 +156,26 @@ static navigationOptions = ({navigation}) => {
                 </View>
             <View style={{margin:10,backgroundColor:'#F9F9F9',padding:10}}>
                 {!!this.state.post.volunteer && this.state.post.volunteer.map((e,i)=>{
-                    return <View key={i} style={{borderWidth:1,padding:20,marginBottom:10}}>
+                    return <View key={i} style={{borderWidth:1,paddingLeft:20,marginBottom:10,paddingTop:10,borderRadius:10,borderColor:'gray'}}>
                             <Text style={{fontSize:20,fontWeight:'bold'}}>{e.name}</Text>
                             <Text>Blood: {e.bloodGroup}</Text>
-                            <Text style={{fontSize:20,color:'red'}}>{e.status}</Text>
+                            {e.status === 'Not Donated'
+                            ?
+                            <Text style={{fontSize:20,color:'#296'}}>Status : {e.status}</Text>
+                            :
+                            <Text style={{fontSize:20,color:'red'}}>Status : {e.status}</Text>
+                        }
+                           {e.status === 'Not Donated'
+                        ?
+                        <TouchableOpacity onPress={()=>this.statusChange(i,'Donated')} style={{alignSelf:'flex-end',backgroundColor:'#296',padding:5,paddingLeft:14,paddingRight:14,marginTop:10,margin:5,borderRadius:5,}}>
+                                    <Text style={{fontSize:17,color:'white'}}>Donated</Text>
+                                </TouchableOpacity>
+:
+                                <TouchableOpacity onPress={()=>this.statusChange(i,'Not Donated')} style={{alignSelf:'flex-end',backgroundColor:'black',padding:5,paddingLeft:14,paddingRight:14,marginTop:10,margin:5,borderRadius:5,}}>
+                                    <Text style={{fontSize:17,color:'white'}}>Not Donated</Text>
+                                </TouchableOpacity>
+}
+                      
                         </View>
                 })}
             </View>
